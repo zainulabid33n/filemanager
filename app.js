@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const path = require('path');
-require('./models/Files');
+require('./models/File');
+require('./models/FileMetadata');
 
 const app = express();
 // connectDB();

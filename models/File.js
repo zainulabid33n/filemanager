@@ -8,8 +8,8 @@ const createTableQuery = `
     fileType TEXT NOT NULL,
     tags TEXT,
     userId INTEGER,
-    FOREIGN KEY (userId) REFERENCES Users(id),
-    views INTEGER DEFAULT 0
+    views INTEGER DEFAULT 0,
+    FOREIGN KEY (userId) REFERENCES Users(id)
   );
 `;
 
