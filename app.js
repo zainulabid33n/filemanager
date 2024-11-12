@@ -9,9 +9,10 @@ const app = express();
 // connectDB();
 
 app.use(cors({
-    origin: '*', // Allow your frontend's domain (localhost:3000) to make requests
-    methods: 'GET, POST, PUT, DELETE', // Specify the allowed HTTP methods
-    allowedHeaders: 'Content-Type, Authorization', // Specify the allowed headers
+    origin: 'http://localhost:3000', // Replace with your frontend URL (local or production)
+    methods: 'GET, POST, PUT, DELETE', // Allowed HTTP methods
+    allowedHeaders: 'Content-Type, Authorization', // Allowed headers
+    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 }));
 
 app.use(express.json());
