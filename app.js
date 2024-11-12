@@ -8,12 +8,14 @@ require('./models/FileMetadata');
 const app = express();
 // connectDB();
 
-app.use(cors({
-    origin: 'http://localhost:5000', // Replace with your frontend URL (local or production)
-    methods: 'GET, POST, PUT, DELETE', // Allowed HTTP methods
-    allowedHeaders: 'Content-Type, Authorization', // Allowed headers
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-}));
+const corsOptions = {
+    origin: '*',  // Allow all origins
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'], // Allow these HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'],  // Allow these headers
+    credentials: true,  // Allow cookies and authorization headers to be sent in cross-origin requests
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
