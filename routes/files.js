@@ -257,16 +257,23 @@ router.get('/file/view/:shareableLink', (req, res) => {
         if (!row) {
             return res.status(404).json({ message: 'File not found or invalid shareable link' });
         }
-
-        // Construct the absolute path to the file
-        const filePath = path.join(__dirname, '../', row.path);
-        console.log('Serving file from:', filePath);
-
-        res.sendFile(filePath, (err) => {
+        const incrementViewsQuery = `UPDATE Files SET views = views + 1 WHERE id = ?`;
+        db.run(incrementViewsQuery, [row.id], (err) => {
             if (err) {
-                console.error('Error sending file:', err.message);
-                res.status(500).json({ error: 'Error retrieving file' });
+                console.error('Error incrementing views:', err.message);
+                return res.status(500).json({ error: 'Failed to update view count' });
             }
+
+            // Construct the absolute path to the file
+            const filePath = path.join(__dirname, '../', row.path);
+            console.log('Serving file from:', filePath);
+
+            res.sendFile(filePath, (err) => {
+                if (err) {
+                    console.error('Error sending file:', err.message);
+                    res.status(500).json({ error: 'Error retrieving file' });
+                }
+            });
         });
     });
 });
