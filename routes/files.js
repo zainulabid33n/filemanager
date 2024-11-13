@@ -209,8 +209,6 @@ router.get('/file/share/:id', auth, (req, res) => {
 });
 
 
-const path = require('path');
-
 router.get('/file/view/:shareableLink', (req, res) => {
     const shareableLink = req.params.shareableLink;
 
