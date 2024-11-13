@@ -165,35 +165,6 @@ router.patch('/:fileId/tags', auth, (req, res) => {
 });
 
 
-// 4. Generating Shareable Link (GET)
-// router.get('/file/url/:id', auth, (req, res) => {
-//     const fileId = req.params.id;
-
-//     const getFileQuery = `
-//         SELECT filename
-//         FROM Files
-//         WHERE id = ? AND userId = ?
-//     `;
-
-//     db.get(getFileQuery, [fileId, req.user.id], (err, file) => {
-//         if (err) {
-//             console.error('Error retrieving file:', err.message);
-//             return res.status(500).json({ error: 'Failed to retrieve file' });
-//         }
-
-//         if (!file) {
-//             return res.status(404).json({ error: 'File not found' });
-//         }
-
-//         // Construct the file URL
-//         const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-
-//         // Respond with the URL only
-//         res.json({ url: fileUrl });
-//     });
-// });
-
-
 router.get('/file/share/:id', auth, (req, res) => {
     const fileId = req.params.id;
 
@@ -238,11 +209,13 @@ router.get('/file/share/:id', auth, (req, res) => {
 });
 
 
+const path = require('path');
+
 router.get('/file/view/:shareableLink', (req, res) => {
     const shareableLink = req.params.shareableLink;
 
     const query = `
-        SELECT f.filename, f.path, f.fileType
+        SELECT f.id, f.filename, f.path, f.fileType
         FROM FileMetadata fm
         JOIN Files f ON f.id = fm.fileId
         WHERE fm.shareableLink = ?
@@ -257,6 +230,8 @@ router.get('/file/view/:shareableLink', (req, res) => {
         if (!row) {
             return res.status(404).json({ message: 'File not found or invalid shareable link' });
         }
+
+        // Increment the views count for the file
         const incrementViewsQuery = `UPDATE Files SET views = views + 1 WHERE id = ?`;
         db.run(incrementViewsQuery, [row.id], (err) => {
             if (err) {
@@ -264,7 +239,7 @@ router.get('/file/view/:shareableLink', (req, res) => {
                 return res.status(500).json({ error: 'Failed to update view count' });
             }
 
-            // Construct the absolute path to the file
+            // Serve the file after updating the views count
             const filePath = path.join(__dirname, '../', row.path);
             console.log('Serving file from:', filePath);
 
@@ -277,6 +252,7 @@ router.get('/file/view/:shareableLink', (req, res) => {
         });
     });
 });
+
 
 
 module.exports = router;
